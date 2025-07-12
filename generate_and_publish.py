@@ -10,6 +10,7 @@ import sys
 import subprocess
 import json
 from pathlib import Path
+from dotenv import load_dotenv
 
 # プロジェクトルートを取得
 PROJECT_ROOT = Path(__file__).parent
@@ -54,19 +55,20 @@ def setup_environment():
     """環境設定の確認"""
     print("🔧 環境設定を確認中...")
     
+    # プロジェクトルートの.envファイルを読み込み
+    env_file = PROJECT_ROOT / ".env"
+    if env_file.exists():
+        load_dotenv(env_file)
+        print("✅ .envファイルを読み込みました")
+    else:
+        print("⚠️  .envファイルが見つかりません（オプション）")
+    
     # Python仮想環境の確認
     venv_path = PYTHON_DIR / "venv"
     if not venv_path.exists():
         print("❌ Python仮想環境が見つかりません")
         print(f"   以下のコマンドで作成してください:")
         print(f"   cd {PYTHON_DIR} && python -m venv venv")
-        return False
-    
-    # .envファイルの確認
-    env_file = PYTHON_DIR / ".env"
-    if not env_file.exists():
-        print("❌ .envファイルが見つかりません")
-        print(f"   {PYTHON_DIR}/.env.sampleを参考に作成してください")
         return False
     
     print("✅ 環境設定OK")

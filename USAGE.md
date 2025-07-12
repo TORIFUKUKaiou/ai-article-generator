@@ -6,18 +6,37 @@
 
 ## セットアップ
 
-### 1. 環境変数の設定
+### 1. プロジェクト用仮想環境の作成
 
 ```bash
+# プロジェクトルートで仮想環境を作成
+python -m venv venv
+source venv/bin/activate
+
+# 統合スクリプト用の依存関係をインストール
+pip install -r requirements.txt
+```
+
+### 2. 環境変数の設定
+
+```bash
+# プロジェクトルートに.envファイルを作成
+# QIITA_ACCESS_TOKENを設定（統合スクリプト用）
+echo "QIITA_ACCESS_TOKEN=your_qiita_access_token_here" > .env
+
 # python/.envファイルを作成
 cp python/.env.sample python/.env
 
-# .envファイルを編集してAPI Keyを設定
+# python/.envファイルを編集してOpenAI API Keyを設定
 OPENAI_API_KEY=your_openai_api_key_here
-QIITA_ACCESS_TOKEN=your_qiita_access_token_here
 ```
 
-### 2. Python仮想環境の準備
+**注意**: 
+- `generate_and_publish.py`は自動的にプロジェクトルートの`.env`ファイルを読み込みます
+- `QIITA_ACCESS_TOKEN`はプロジェクトルートの`.env`に設定
+- `OPENAI_API_KEY`は`python/.env`に設定
+
+### 3. Python仮想環境の準備
 
 ```bash
 cd python
