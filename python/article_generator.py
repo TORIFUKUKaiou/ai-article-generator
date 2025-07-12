@@ -43,7 +43,8 @@ class ArticleGenerator:
         topic: str, 
         target_audience: str = "エンジニア",
         article_length: str = "中程度",
-        programming_language: Optional[str] = None
+        programming_language: Optional[str] = None,
+        template_style: Optional[str] = None
     ) -> ArticleData:
         """
         指定されたトピックで記事を生成
@@ -53,13 +54,14 @@ class ArticleGenerator:
             target_audience: 対象読者
             article_length: 記事の長さ (短い/中程度/長い)
             programming_language: プログラミング言語 (指定がある場合)
+            template_style: 記事テンプレートのスタイル
             
         Returns:
             ArticleData: 生成された記事データ
         """
         
         # プロンプトを構築
-        prompt = self._build_prompt(topic, target_audience, article_length, programming_language)
+        prompt = self._build_prompt(topic, target_audience, article_length, programming_language, template_style)
         
         try:
             # OpenAI APIを呼び出し
@@ -103,7 +105,8 @@ class ArticleGenerator:
         topic: str, 
         target_audience: str, 
         article_length: str,
-        programming_language: Optional[str]
+        programming_language: Optional[str],
+        template_style: Optional[str] = None
     ) -> str:
         """記事生成用のプロンプトを構築"""
         
@@ -111,6 +114,49 @@ class ArticleGenerator:
             "短い": "1000-1500文字程度（基本的な説明と簡単な例）",
             "中程度": "2000-3000文字程度（詳細な説明と複数の例）", 
             "長い": "3500-5000文字程度（網羅的な説明と実践的な例）"
+        }
+        
+        # テンプレート別の追加指示
+        template_instructions = {
+            "tutorial": """
+【チュートリアル記事の特別要件】:
+- 初心者でも理解できる段階的な説明
+- 各ステップを明確に分けて解説
+- 「なぜこの手順が必要か」の理由も説明
+- 実際に手を動かして学べる構成
+- つまずきやすいポイントの事前説明""",
+            
+            "tips": """
+【Tips記事の特別要件】:
+- すぐに実践で使える小技やテクニック
+- 「知っていると便利」な情報を中心に
+- 短時間で読めて即座に活用できる内容
+- 具体的な使用場面の提示
+- 他の方法との比較があると良い""",
+            
+            "deep-dive": """
+【深掘り記事の特別要件】:
+- 技術の内部動作や仕組みの詳細解説
+- 上級者向けの高度な内容
+- 理論的背景と実装の両方をカバー
+- パフォーマンスやセキュリティの考慮
+- 実際のプロダクションでの使用例""",
+            
+            "comparison": """
+【比較記事の特別要件】:
+- 複数の技術・手法の客観的な比較
+- それぞれのメリット・デメリット
+- 使用場面に応じた選択指針
+- 実際のコード例での性能比較
+- 導入コストや学習コストの考慮""",
+            
+            "troubleshooting": """
+【トラブルシューティング記事の特別要件】:
+- よくある問題とその解決方法
+- エラーメッセージの読み方と対処法
+- 問題の原因分析のアプローチ
+- 予防策や回避方法の提示
+- デバッグのコツやツールの紹介"""
         }
         
         prompt = f"""
@@ -125,7 +171,12 @@ class ArticleGenerator:
         if programming_language:
             prompt += f"- 主要プログラミング言語: {programming_language}\n"
         
+        # テンプレート固有の指示を追加
+        if template_style and template_style in template_instructions:
+            prompt += template_instructions[template_style]
+        
         prompt += f"""
+
 【記事構成の要件】:
 1. **魅力的なタイトル**: 具体的で読みたくなるタイトル
 2. **はじめに**: 

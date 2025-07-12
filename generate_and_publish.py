@@ -100,7 +100,8 @@ article = generator.generate_article(
     topic='{topic}',
     target_audience=target_audience,
     article_length=article_length,
-    programming_language={repr(programming_language)}
+    programming_language={repr(programming_language)},
+    template_style='{template_type}'
 )
 
 print("✅ 記事生成完了!")
