@@ -132,11 +132,17 @@ class ArticleGenerator:
 
 【出力形式】:
 ```
-TITLE: [記事タイトル]
-TAGS: [タグ1,タグ2,タグ3]
+TITLE: [魅力的で具体的なタイトル]
+TAGS: タグ1,タグ2,タグ3
 BODY:
 [記事本文をMarkdown形式で]
 ```
+
+【タグの注意事項】:
+- タグは3-5個程度
+- カンマ区切りで記載
+- 角括弧は使用しない
+- 日本語・英語どちらでも可
 
 実用的で読みやすい記事を作成してください。
 """
@@ -163,8 +169,12 @@ BODY:
                 title = line.replace("TITLE:", "").strip()
             elif line.startswith("TAGS:"):
                 tag_str = line.replace("TAGS:", "").strip()
-                tag_names = [tag.strip() for tag in tag_str.split(',')]
-                tags = [{"name": name, "versions": []} for name in tag_names if name]
+                # 角括弧を除去してからタグを分割
+                tag_str = tag_str.strip('[]')
+                tag_names = [tag.strip().strip('[]') for tag in tag_str.split(',')]
+                # 空のタグや不正なタグを除外
+                tag_names = [name for name in tag_names if name and len(name) > 0]
+                tags = [{"name": name, "versions": []} for name in tag_names]
             elif line.startswith("BODY:"):
                 body_start = i + 1
                 break
