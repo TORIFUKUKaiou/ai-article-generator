@@ -1,2 +1,8 @@
-# 統合スクリプト用の依存関係
+# AI記事生成・投稿システム 統合依存関係
+# 統合スクリプト用
 python-dotenv>=1.0.0
+
+# 記事生成用 (OpenAI API)
+openai>=1.0.0
+pydantic>=2.0.0
+requests>=2.31.0
