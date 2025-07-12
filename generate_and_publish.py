@@ -118,54 +118,37 @@ def generate_article(topic, template_type, programming_language=None, custom_par
         return False
 
 def publish_article(access_token):
-    """記事をQiitaに投稿 (mix run方式)"""
+    """記事をQiitaに投稿 (シェルスクリプト使用)"""
     print("🚀 Qiitaに投稿中...")
     json_path = PYTHON_DIR / "generated_article.json"
+    
     if not json_path.exists():
         print(f"❌ 投稿用のJSONファイルが見つかりません: {json_path}")
         return False
 
-    # 一時的なElixirスクリプトファイルを作成
-    temp_script = ELIXIR_DIR / "temp_publish.exs"
-    
-    script_content = f'''
-access_token = "{access_token}"
-json_path = "{json_path}"
-
-case QiitaPublisher.PythonBridge.publish_from_json(access_token, json_path) do
-  {{:ok, response}} ->
-    IO.puts("✅ 投稿成功!")
-    IO.puts("   タイトル: " <> response["title"])
-    IO.puts("   URL: " <> response["url"])
-    IO.puts("   プライベート: " <> to_string(response["private"]))
-  {{:error, reason}} ->
-    IO.puts("❌ 投稿エラー: " <> inspect(reason))
-    System.halt(1)
-end
-'''
+    # 専用シェルスクリプトを実行
+    script_path = ELIXIR_DIR.parent / "publish_to_qiita.sh"
     
     try:
-        # 一時スクリプトファイルに書き込み
-        with open(temp_script, 'w', encoding='utf-8') as f:
-            f.write(script_content)
+        result = subprocess.run(
+            [str(script_path), access_token, str(json_path)],
+            capture_output=True,
+            text=True,
+            check=True
+        )
         
-        cmd = f"cd {ELIXIR_DIR} && mix run {temp_script.name}"
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-        
-        # 一時ファイルを削除
-        temp_script.unlink(missing_ok=True)
-        
-        if result.returncode != 0:
-            print(f"❌ 投稿エラー: {result.stderr}")
-            return False
-            
         print(result.stdout)
         return True
         
+    except subprocess.CalledProcessError as e:
+        print(f"❌ 投稿エラー:")
+        if e.stdout:
+            print(e.stdout)
+        if e.stderr:
+            print(e.stderr)
+        return False
     except Exception as e:
-        # 一時ファイルを削除
-        temp_script.unlink(missing_ok=True)
-        print(f"❌ 投稿中にエラー: {e}")
+        print(f"❌ 投稿中に予期せぬエラー: {e}")
         return False
 
 def main():
