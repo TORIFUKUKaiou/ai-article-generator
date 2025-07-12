@@ -17,6 +17,10 @@ PROJECT_ROOT = Path(__file__).parent
 PYTHON_DIR = PROJECT_ROOT / "python"
 ELIXIR_DIR = PROJECT_ROOT / "elixir" / "qiita_publisher"
 
+# Pythonモジュールをインポートするためにパスを追加
+sys.path.append(str(PROJECT_ROOT / "python"))
+from article_generator import ArticleGenerator, ArticleData
+
 # 記事テンプレート定義
 ARTICLE_TEMPLATES = {
     "tutorial": {
@@ -75,79 +79,56 @@ def setup_environment():
     return True
 
 def generate_article(topic, template_type, programming_language=None, custom_params=None, model="gpt-4o-mini"):
-    """記事を生成"""
+    """記事を生成 (リファクタリング版)"""
     print(f"📝 記事生成中: {topic}")
     print(f"🤖 使用モデル: {model}")
-    
-    template = ARTICLE_TEMPLATES.get(template_type, ARTICLE_TEMPLATES["tutorial"])
-    
-    # 一時的なPythonスクリプトファイルを作成
-    temp_script = PYTHON_DIR / "temp_generate.py"
-    
-    script_content = f"""
-import sys
-sys.path.append('{PYTHON_DIR}')
-from article_generator import ArticleGenerator
 
-generator = ArticleGenerator(model='{model}')
-
-# カスタムパラメータの適用
-custom_params = {custom_params or {}}
-target_audience = custom_params.get('target_audience', '{template["target_audience"]}')
-article_length = custom_params.get('article_length', '{template["article_length"]}')
-
-article = generator.generate_article(
-    topic='{topic}',
-    target_audience=target_audience,
-    article_length=article_length,
-    programming_language={repr(programming_language)},
-    template_style='{template_type}'
-)
-
-print("✅ 記事生成完了!")
-print(f"   タイトル: {{article.title}}")
-print(f"   タグ: {{[tag['name'] for tag in article.tags]}}")
-print(f"   本文長: {{len(article.body)}}文字")
-
-generator.save_article_json(article, '{PYTHON_DIR}/generated_article.json')
-print("💾 JSONファイルに保存しました")
-"""
-    
     try:
-        # 一時スクリプトファイルに書き込み
-        with open(temp_script, 'w', encoding='utf-8') as f:
-            f.write(script_content)
+        template = ARTICLE_TEMPLATES.get(template_type, ARTICLE_TEMPLATES["tutorial"])
         
-        # Python仮想環境でスクリプト実行
-        cmd = f"cd {PYTHON_DIR} && source venv/bin/activate && python temp_generate.py"
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-        
-        # 一時ファイルを削除
-        temp_script.unlink(missing_ok=True)
-        
-        if result.returncode != 0:
-            print(f"❌ 記事生成エラー: {result.stderr}")
-            return False
-            
-        print(result.stdout)
+        # パラメータを決定
+        target_audience = custom_params.get('target_audience', template["target_audience"])
+        article_length = custom_params.get('article_length', template["article_length"])
+
+        # ArticleGeneratorを直接呼び出し
+        generator = ArticleGenerator(model=model)
+        article = generator.generate_article(
+            topic=topic,
+            target_audience=target_audience,
+            article_length=article_length,
+            programming_language=programming_language,
+            template_style=template_type
+        )
+
+        print("✅ 記事生成完了!")
+        print(f"   タイトル: {article.title}")
+        print(f"   タグ: {[tag['name'] for tag in article.tags]}")
+        print(f"   本文長: {len(article.body)}文字")
+
+        # JSONファイルに保存
+        output_path = PYTHON_DIR / "generated_article.json"
+        generator.save_article_json(article, str(output_path))
+        print(f"💾 JSONファイルを {output_path} に保存しました")
         return True
-        
+
     except Exception as e:
-        # 一時ファイルを削除
-        temp_script.unlink(missing_ok=True)
         print(f"❌ 記事生成中にエラー: {e}")
         return False
 
-def publish_article(access_token, private=True):
-    """記事をQiitaに投稿"""
+def publish_article(access_token):
+    """記事をQiitaに投稿 (mix run方式)"""
     print("🚀 Qiitaに投稿中...")
-    
+    json_path = PYTHON_DIR / "generated_article.json"
+    if not json_path.exists():
+        print(f"❌ 投稿用のJSONファイルが見つかりません: {json_path}")
+        return False
+
     # 一時的なElixirスクリプトファイルを作成
     temp_script = ELIXIR_DIR / "temp_publish.exs"
     
     script_content = f'''
 access_token = "{access_token}"
-json_path = "{PYTHON_DIR}/generated_article.json"
+json_path = "{json_path}"
 
 case QiitaPublisher.PythonBridge.publish_from_json(access_token, json_path) do
   {{:ok, response}} ->
@@ -264,7 +245,7 @@ def main():
             print("   --token オプションまたは環境変数QIITA_ACCESS_TOKENを設定してください")
             sys.exit(1)
         
-        if not publish_article(access_token, args.private):
+        if not publish_article(access_token):
             sys.exit(1)
     
     print("\n🎉 完了!")
