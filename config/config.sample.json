@@ -1,0 +1,6 @@
+{
+  "qiita": {
+    "access_token": "your_qiita_access_token_here",
+    "base_url": "https://qiita.com/api/v2"
+  }
+}
