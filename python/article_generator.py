@@ -25,16 +25,18 @@ class ArticleData:
 class ArticleGenerator:
     """OpenAI APIを使用した記事生成クラス"""
     
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, model: str = "gpt-4o-mini"):
         """
         初期化
         
         Args:
             api_key: OpenAI API Key (環境変数OPENAI_API_KEYから取得可能)
+            model: 使用するOpenAIモデル (デフォルト: gpt-4o-mini)
         """
         self.client = OpenAI(
             api_key=api_key or os.getenv("OPENAI_API_KEY")
         )
+        self.model = model
     
     def generate_article(
         self, 
@@ -62,7 +64,7 @@ class ArticleGenerator:
         try:
             # OpenAI APIを呼び出し
             response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
+                model=self.model,
                 messages=[
                     {
                         "role": "system", 
@@ -226,8 +228,9 @@ def main():
         return
     
     try:
-        # 記事生成器を初期化
+        # 記事生成器を初期化（デフォルトモデル）
         generator = ArticleGenerator()
+        print(f"🤖 使用モデル: {generator.model}")
         
         # サンプル記事を生成
         print("📝 記事を生成中...")

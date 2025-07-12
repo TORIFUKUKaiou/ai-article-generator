@@ -74,9 +74,10 @@ def setup_environment():
     print("✅ 環境設定OK")
     return True
 
-def generate_article(topic, template_type, programming_language=None, custom_params=None):
+def generate_article(topic, template_type, programming_language=None, custom_params=None, model="gpt-4o-mini"):
     """記事を生成"""
     print(f"📝 記事生成中: {topic}")
+    print(f"🤖 使用モデル: {model}")
     
     template = ARTICLE_TEMPLATES.get(template_type, ARTICLE_TEMPLATES["tutorial"])
     
@@ -88,7 +89,7 @@ import sys
 sys.path.append('{PYTHON_DIR}')
 from article_generator import ArticleGenerator
 
-generator = ArticleGenerator()
+generator = ArticleGenerator(model='{model}')
 
 # カスタムパラメータの適用
 custom_params = {custom_params or {}}
@@ -206,6 +207,8 @@ def main():
     parser.add_argument("--lang", "-l", help="プログラミング言語")
     parser.add_argument("--audience", "-a", help="対象読者")
     parser.add_argument("--length", choices=["短い", "中程度", "長い"], help="記事の長さ")
+    parser.add_argument("--model", "-m", default="gpt-4o-mini", 
+                       help="OpenAIモデル (デフォルト: gpt-4o-mini)")
     parser.add_argument("--token", help="Qiita Access Token (環境変数QIITA_ACCESS_TOKENからも取得可能)")
     parser.add_argument("--private", action="store_true", default=True, help="プライベート記事として投稿")
     parser.add_argument("--generate-only", action="store_true", help="記事生成のみ（投稿しない）")
@@ -232,13 +235,14 @@ def main():
         print(f"📋 設定:")
         print(f"   トピック: {args.topic}")
         print(f"   テンプレート: {args.template} ({ARTICLE_TEMPLATES[args.template]['description']})")
+        print(f"   モデル: {args.model}")
         if args.lang:
             print(f"   言語: {args.lang}")
         if custom_params:
             print(f"   カスタム設定: {custom_params}")
         print()
         
-        if not generate_article(args.topic, args.template, args.lang, custom_params):
+        if not generate_article(args.topic, args.template, args.lang, custom_params, args.model):
             sys.exit(1)
     
     # 記事投稿
