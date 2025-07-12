@@ -1,0 +1,18 @@
+# Elixir
+/_build
+/cover
+/deps
+/doc
+/.fetch
+erl_crash.dump
+*.beam
+/config/*.secret.exs
+.elixir_ls/
+
+# Mix
+mix.lock.backup
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
