@@ -538,7 +538,7 @@ AI支援開発は、プログラマーの創造性を制限するものではな
 
 ## 参考リンク
 
-- [完成したプロジェクト（GitHub）](#) ※公開予定
+- [完成したプロジェクト（GitHub）](https://github.com/TORIFUKUKaiou/ai-article-generator)
 - [Amazon Q CLI公式ドキュメント](https://docs.aws.amazon.com/amazonq/)
 - [OpenAI API Documentation](https://platform.openai.com/docs)
 - [Qiita API v2](https://qiita.com/api/v2/docs)
