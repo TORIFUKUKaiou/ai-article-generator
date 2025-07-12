@@ -6,14 +6,14 @@
 
 ## セットアップ
 
-### 1. プロジェクト用仮想環境の作成
+### 1. 仮想環境の作成とパッケージインストール
 
 ```bash
 # プロジェクトルートで仮想環境を作成
 python -m venv venv
 source venv/bin/activate
 
-# 統合スクリプト用の依存関係をインストール
+# 全依存関係をインストール
 pip install -r requirements.txt
 ```
 
@@ -36,18 +36,12 @@ OPENAI_API_KEY=your_openai_api_key_here
 - `QIITA_ACCESS_TOKEN`はプロジェクトルートの`.env`に設定
 - `OPENAI_API_KEY`は`python/.env`に設定
 
-### 3. Python仮想環境の準備
-
-```bash
-cd python
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
 ## 基本的な使用方法
 
 ```bash
+# 仮想環境をアクティベート
+source venv/bin/activate
+
 # 基本的な記事生成・投稿
 python generate_and_publish.py "ElixirのGenServerの使い方"
 
@@ -58,7 +52,7 @@ python generate_and_publish.py "React Hooksの活用法" --template tips --lang 
 python generate_and_publish.py "Docker入門" --generate-only
 
 # 投稿のみ（生成済みJSONを使用）
-python generate_and_publish.py --publish-only --token YOUR_TOKEN
+python generate_and_publish.py --publish-only
 ```
 
 ## 記事テンプレート
@@ -74,7 +68,7 @@ python generate_and_publish.py --publish-only --token YOUR_TOKEN
 ## オプション
 
 ### 必須パラメータ
-- `topic`: 記事のトピック
+- `topic`: 記事のトピック（`--publish-only`時は不要）
 
 ### オプションパラメータ
 - `--template, -t`: 記事テンプレート（デフォルト: tutorial）
@@ -94,7 +88,6 @@ python generate_and_publish.py --publish-only --token YOUR_TOKEN
 | `gpt-4o-mini` | 軽量版GPT-4o（デフォルト） | 良い | 安い | 一般的な記事生成 |
 | `gpt-4o` | 最新のGPT-4 Optimized | 最高 | 高い | 高品質記事・複雑なトピック |
 | `gpt-4-turbo` | GPT-4 Turbo | 高い | 中程度 | バランス重視 |
-| `gpt-4` | 標準のGPT-4 | 高い | 高い | 高品質記事 |
 
 **推奨**:
 - **開発・テスト**: `gpt-4o-mini`（デフォルト）
@@ -106,6 +99,7 @@ python generate_and_publish.py --publish-only --token YOUR_TOKEN
 ### 1. 初心者向けチュートリアル記事
 
 ```bash
+source venv/bin/activate
 python generate_and_publish.py "Pythonでのファイル操作入門" \
   --template tutorial \
   --lang Python \
@@ -115,6 +109,7 @@ python generate_and_publish.py "Pythonでのファイル操作入門" \
 ### 2. 実用的なTips記事
 
 ```bash
+source venv/bin/activate
 python generate_and_publish.py "VS Codeの便利なショートカット10選" \
   --template tips \
   --length "中程度"
@@ -123,6 +118,7 @@ python generate_and_publish.py "VS Codeの便利なショートカット10選" \
 ### 3. 技術比較記事
 
 ```bash
+source venv/bin/activate
 python generate_and_publish.py "Next.js vs Nuxt.js 2024年版比較" \
   --template comparison \
   --lang JavaScript
@@ -131,14 +127,17 @@ python generate_and_publish.py "Next.js vs Nuxt.js 2024年版比較" \
 ### 4. トラブルシューティング記事
 
 ```bash
+source venv/bin/activate
 python generate_and_publish.py "Docker Composeでよくあるエラーと解決法" \
   --template troubleshooting \
   --audience "DevOpsエンジニア"
 ```
 
-### 6. 高性能モデルでの記事生成
+### 5. 高性能モデルでの記事生成
 
 ```bash
+source venv/bin/activate
+
 # GPT-4oで高品質な記事を生成
 python generate_and_publish.py "Rustの所有権システムの仕組み" \
   --template deep-dive \
@@ -150,6 +149,20 @@ python generate_and_publish.py "Rustの所有権システムの仕組み" \
 python generate_and_publish.py "TypeScript vs JavaScript 2024年版" \
   --template comparison \
   --model gpt-4-turbo
+```
+
+### 6. 段階的ワークフロー
+
+```bash
+source venv/bin/activate
+
+# 1. 記事生成のみ
+python generate_and_publish.py "Elixirの並行処理入門" --template tutorial --generate-only
+
+# 2. 生成された記事を確認・編集
+
+# 3. 投稿のみ
+python generate_and_publish.py --publish-only
 ```
 
 ## ワークフロー
@@ -170,9 +183,9 @@ python generate_and_publish.py "TypeScript vs JavaScript 2024年版" \
 
 2. **仮想環境エラー**
    ```
-   ❌ Python仮想環境が見つかりません
+   ModuleNotFoundError: No module named 'openai'
    ```
-   → `cd python && python -m venv venv`で仮想環境を作成
+   → `source venv/bin/activate`で仮想環境をアクティベート
 
 3. **投稿エラー**
    ```
@@ -186,3 +199,17 @@ python generate_and_publish.py "TypeScript vs JavaScript 2024年版" \
 - OpenAI APIの使用料金が発生します
 - 生成された記事は必ず内容を確認してから公開してください
 - Qiitaの利用規約を遵守してください
+
+## プロジェクト構造
+
+```
+ai-article-generator/
+├── venv/                    # 統一仮想環境
+├── requirements.txt         # 全依存関係
+├── generate_and_publish.py  # メインスクリプト
+├── .env                    # Qiita Access Token
+├── python/
+│   ├── article_generator.py # 記事生成モジュール
+│   └── .env                # OpenAI API Key
+└── elixir/                 # Qiita投稿モジュール
+```
