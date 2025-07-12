@@ -199,7 +199,7 @@ def main():
         """
     )
     
-    parser.add_argument("topic", help="記事のトピック")
+    parser.add_argument("topic", nargs='?', help="記事のトピック")
     parser.add_argument("--template", "-t", 
                        choices=list(ARTICLE_TEMPLATES.keys()),
                        default="tutorial",
@@ -223,6 +223,12 @@ def main():
     if not setup_environment():
         sys.exit(1)
     
+    # topicのバリデーション
+    if not args.publish_only and not args.topic:
+        print("❌ エラー: 記事生成にはトピックが必要です")
+        print("   --publish-onlyオプション以外では、トピックを指定してください")
+        sys.exit(1)
+    
     # カスタムパラメータの構築
     custom_params = {}
     if args.audience:
@@ -232,6 +238,10 @@ def main():
     
     # 記事生成
     if not args.publish_only:
+        if not args.topic:
+            print("❌ エラー: 記事生成にはトピックが必要です")
+            sys.exit(1)
+            
         print(f"📋 設定:")
         print(f"   トピック: {args.topic}")
         print(f"   テンプレート: {args.template} ({ARTICLE_TEMPLATES[args.template]['description']})")
