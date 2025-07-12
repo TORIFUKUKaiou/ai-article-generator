@@ -572,7 +572,6 @@ AI支援開発は、プログラマーの創造性を制限するものではな
 
 # 参考: 自動生成された記事たちを限定公開（いつの日にか正式公開するかも！？）
 
-- [ElixirのReqライブラリでHTTPリクエストを簡単に扱おう](https://qiita.com/torifukukaiou/private/8b2936c11d9b07e6822a)
 - [Elixirの並行処理入門 - 簡単に使えるActorモデルとTaskを理解しよう](https://qiita.com/torifukukaiou/private/41519580153024ed0bfc)
 - [Elixirで学ぶ関数型プログラミングの基礎と実践](https://qiita.com/torifukukaiou/private/34bb4ff56d2e6c4c9dfa)
 - [ElixirとGoの並行処理の違いと使いどころ](https://qiita.com/torifukukaiou/private/92595527ed16372de47b)
