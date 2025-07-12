@@ -68,6 +68,12 @@ system_prompt = """あなたは1000いいねを獲得する技術記事を書く
 
 ## 技術的な挑戦：Python-Elixir連携
 
+:::note warn
+全部Pythonで作ってもいいんです。
+Elixirを使っているのは宗教上の理由です。
+[Qiita Tech Sprint 2025](https://qiita.com/tech-festa/2025/tech-sprint)に、[fukuoka.ex](https://qiita.com/organizations/fukuokaex) Organizationと紐づけて投稿（闘魂）をいたしたく、記事投稿（闘魂）機能は大好きなElixirを採用しました。
+:::
+
 ### 「Qiitaに自動投稿もしたい」
 記事生成だけでは満足できず、投稿の自動化も要求しました。
 
@@ -537,6 +543,27 @@ AI支援開発は、プログラマーの創造性を制限するものではな
 - [OpenAI API Documentation](https://platform.openai.com/docs)
 - [Qiita API v2](https://qiita.com/api/v2/docs)
 
+## 参考: 自動生成された記事たちを限定公開（いつの日にか正式公開するかも！？）
+
+- [ElixirのReqライブラリでHTTPリクエストを簡単に扱おう](https://qiita.com/torifukukaiou/private/8b2936c11d9b07e6822a)
+- [Elixirの並行処理入門 - 簡単に使えるActorモデルとTaskを理解しよう](https://qiita.com/torifukukaiou/private/41519580153024ed0bfc)
+- [Elixirで学ぶ関数型プログラミングの基礎と実践](https://qiita.com/torifukukaiou/private/34bb4ff56d2e6c4c9dfa)
+- [ElixirとGoの並行処理の違いと使いどころ](https://qiita.com/torifukukaiou/private/92595527ed16372de47b)
+- [Elixirで極める！高度なパターンマッチングのテクニックと実践例](https://qiita.com/torifukukaiou/private/2e0aa79109e8c935fe76)
+- [Elixirにおける高度なパターンマッチングの技法](https://qiita.com/torifukukaiou/private/4424883e769ec1992b94)
+- [Elixirのパイプライン演算子活用術について](https://qiita.com/torifukukaiou/private/9935cd26bb20fff6db57)
+- [Elixirのパターンマッチング実践について](https://qiita.com/torifukukaiou/private/0bd8a57b9760c956f819)
+- [Elixirの並行処理とGenServerについて](https://qiita.com/torifukukaiou/private/82de12e1c44de1eb318c)
+- [Elixirの関数型プログラミングについて](https://qiita.com/torifukukaiou/private/7bfeebf779735091bc4f)
+- [ElixirのGenServerの使い方について](https://qiita.com/torifukukaiou/private/b5478c4ebe24557fd747)
+- [Elixirのパイプライン演算子について](https://qiita.com/torifukukaiou/private/3a26b0dcb54a034700e5)
+
 ---
 
 **この記事が、AI支援開発に興味を持つエンジニアの参考になれば幸いです。質問やコメントをお待ちしています！** 🚀
+
+
+
+![ChatGPT Image 2025年7月12日 10_22_33.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/131808/eeeae009-3577-4a87-aeba-6f6adce8d4f9.png)
+
+https://qiita.com/tech-festa/2025
