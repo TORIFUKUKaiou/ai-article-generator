@@ -55,6 +55,51 @@ python generate_and_publish.py "Docker入門" --generate-only
 python generate_and_publish.py --publish-only
 ```
 
+## トピック入力方式
+
+### 1. 通常の引数指定（複数行対応）
+
+```bash
+# 単一行トピック
+python generate_and_publish.py "Elixirの並行処理入門"
+
+# 複数行トピック（引用符内で改行）
+python generate_and_publish.py "Elixirの並行処理入門
+
+ActorモデルとTaskの基本概念から
+実際のプロダクションでの使用例まで
+段階的に解説していきます"
+```
+
+### 2. ファイル指定
+
+```bash
+# トピックファイルから読み込み
+python generate_and_publish.py --topic-file sample_topic.txt --template deep-dive
+
+# sample_topic.txt の内容例:
+# Elixirの並行処理とGenServerの実践的活用法
+# 
+# 本記事では、Elixirの並行処理の核となるGenServerについて、
+# 基本概念から実際のプロダクションでの使用例まで段階的に解説します。
+# 
+# 具体的には以下の内容を扱います：
+# - GenServerの基本的な仕組みとActorモデル
+# - 状態管理とメッセージパッシング
+# - エラーハンドリングとスーパーバイザーツリー
+```
+
+### 3. 対話式入力
+
+```bash
+# 対話式入力を明示的に指定
+python generate_and_publish.py --interactive --template tutorial
+
+# トピック未指定時は自動的に対話式入力
+python generate_and_publish.py --template tips
+# > トピックを入力してください（複数行可、Ctrl+D（Mac/Linux）またはCtrl+Z（Windows）で終了）:
+```
+
 ## 記事テンプレート
 
 | テンプレート | 説明 | 対象読者 | 記事長 |
@@ -68,7 +113,11 @@ python generate_and_publish.py --publish-only
 ## オプション
 
 ### 必須パラメータ
-- `topic`: 記事のトピック（`--publish-only`時は不要）
+- `topic`: 記事のトピック（複数行可、`--publish-only`時は不要）
+
+### トピック入力オプション
+- `--topic-file`: トピックファイルのパス
+- `--interactive, -i`: 対話式トピック入力
 
 ### オプションパラメータ
 - `--template, -t`: 記事テンプレート（デフォルト: tutorial）
@@ -163,6 +212,47 @@ python generate_and_publish.py "Elixirの並行処理入門" --template tutorial
 
 # 3. 投稿のみ
 python generate_and_publish.py --publish-only
+```
+
+### 7. 複数行トピックでの詳細指定
+
+```bash
+source venv/bin/activate
+
+# 複数行トピックで詳細な要求を指定
+python generate_and_publish.py "Elixirの並行処理とGenServer
+
+本記事では以下の内容を段階的に解説します：
+- ActorモデルとTaskの基本概念
+- GenServerの実装パターン
+- エラーハンドリングとスーパーバイザー
+- 実際のプロダクションでの使用例" \
+  --template deep-dive \
+  --lang Elixir
+```
+
+### 8. ファイル指定での構造化トピック
+
+```bash
+source venv/bin/activate
+
+# 事前に作成したトピックファイルを使用
+python generate_and_publish.py --topic-file sample_topic.txt \
+  --template tutorial \
+  --lang Elixir \
+  --model gpt-4o
+```
+
+### 9. 対話式入力での柔軟な記事作成
+
+```bash
+source venv/bin/activate
+
+# 対話式でトピックを入力
+python generate_and_publish.py --interactive \
+  --template tips \
+  --lang Python
+# トピック入力画面が表示され、複数行での詳細な指定が可能
 ```
 
 ## ワークフロー

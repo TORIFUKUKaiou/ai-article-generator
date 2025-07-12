@@ -117,6 +117,59 @@ def generate_article(topic, template_type, programming_language=None, custom_par
         print(f"❌ 記事生成中にエラー: {e}")
         return False
 
+def get_topic(args):
+    """トピックを取得（複数の入力方式に対応）"""
+    if args.topic_file:
+        # ファイルからトピック読み込み
+        try:
+            with open(args.topic_file, 'r', encoding='utf-8') as f:
+                topic = f.read().strip()
+                print(f"📄 ファイルからトピックを読み込みました: {args.topic_file}")
+                return topic
+        except FileNotFoundError:
+            print(f"❌ エラー: ファイルが見つかりません: {args.topic_file}")
+            sys.exit(1)
+        except Exception as e:
+            print(f"❌ エラー: ファイル読み込み中にエラー: {e}")
+            sys.exit(1)
+    
+    elif args.interactive:
+        # 対話式入力
+        print("📝 トピックを入力してください（複数行可、Ctrl+D（Mac/Linux）またはCtrl+Z（Windows）で終了）:")
+        print("=" * 50)
+        try:
+            topic = sys.stdin.read().strip()
+            if not topic:
+                print("❌ エラー: トピックが入力されませんでした")
+                sys.exit(1)
+            print("=" * 50)
+            print("✅ トピックを受け取りました")
+            return topic
+        except KeyboardInterrupt:
+            print("\n❌ 入力がキャンセルされました")
+            sys.exit(1)
+    
+    elif args.topic:
+        # 通常の引数指定（複数行対応）
+        return args.topic
+    
+    else:
+        # トピック未指定時は対話式に切り替え
+        print("💡 トピックが指定されていません。対話式入力に切り替えます。")
+        print("📝 トピックを入力してください（複数行可、Ctrl+D（Mac/Linux）またはCtrl+Z（Windows）で終了）:")
+        print("=" * 50)
+        try:
+            topic = sys.stdin.read().strip()
+            if not topic:
+                print("❌ エラー: トピックが入力されませんでした")
+                sys.exit(1)
+            print("=" * 50)
+            print("✅ トピックを受け取りました")
+            return topic
+        except KeyboardInterrupt:
+            print("\n❌ 入力がキャンセルされました")
+            sys.exit(1)
+
 def publish_article(access_token):
     """記事をQiitaに投稿 (シェルスクリプト使用)"""
     print("🚀 Qiitaに投稿中...")
@@ -166,7 +219,9 @@ def main():
         """
     )
     
-    parser.add_argument("topic", nargs='?', help="記事のトピック")
+    parser.add_argument("topic", nargs='?', help="記事のトピック（複数行可）")
+    parser.add_argument("--topic-file", help="トピックファイルのパス")
+    parser.add_argument("--interactive", "-i", action="store_true", help="対話式トピック入力")
     parser.add_argument("--template", "-t", 
                        choices=list(ARTICLE_TEMPLATES.keys()),
                        default="tutorial",
@@ -190,11 +245,14 @@ def main():
     if not setup_environment():
         sys.exit(1)
     
-    # topicのバリデーション
-    if not args.publish_only and not args.topic:
-        print("❌ エラー: 記事生成にはトピックが必要です")
-        print("   --publish-onlyオプション以外では、トピックを指定してください")
-        sys.exit(1)
+    # topicの取得（複数の入力方式に対応）
+    if not args.publish_only:
+        topic = get_topic(args)
+        if not topic:
+            print("❌ エラー: 記事生成にはトピックが必要です")
+            sys.exit(1)
+    else:
+        topic = None
     
     # カスタムパラメータの構築
     custom_params = {}
@@ -205,12 +263,12 @@ def main():
     
     # 記事生成
     if not args.publish_only:
-        if not args.topic:
+        if not topic:
             print("❌ エラー: 記事生成にはトピックが必要です")
             sys.exit(1)
             
         print(f"📋 設定:")
-        print(f"   トピック: {args.topic}")
+        print(f"   トピック: {topic}")
         print(f"   テンプレート: {args.template} ({ARTICLE_TEMPLATES[args.template]['description']})")
         print(f"   モデル: {args.model}")
         if args.lang:
@@ -219,7 +277,7 @@ def main():
             print(f"   カスタム設定: {custom_params}")
         print()
         
-        if not generate_article(args.topic, args.template, args.lang, custom_params, args.model):
+        if not generate_article(topic, args.template, args.lang, custom_params, args.model):
             sys.exit(1)
     
     # 記事投稿
