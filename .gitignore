@@ -6,11 +6,6 @@
 # Virtual environments
 venv/
 
-# Config and secrets
-config/secrets.json
-config/api_keys.json
-config/*.secret.*
-
 # IDE
 .vscode/
 .idea/
