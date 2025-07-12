@@ -67,12 +67,14 @@ def setup_environment():
     else:
         print("⚠️  .envファイルが見つかりません（オプション）")
     
-    # Python仮想環境の確認
-    venv_path = PYTHON_DIR / "venv"
+    # 統一仮想環境の確認
+    venv_path = PROJECT_ROOT / "venv"
     if not venv_path.exists():
         print("❌ Python仮想環境が見つかりません")
         print(f"   以下のコマンドで作成してください:")
-        print(f"   cd {PYTHON_DIR} && python -m venv venv")
+        print(f"   python -m venv venv")
+        print(f"   source venv/bin/activate")
+        print(f"   pip install -r requirements.txt")
         return False
     
     print("✅ 環境設定OK")
