@@ -37,3 +37,7 @@ Pipfile.lock
 
 # Poetry
 poetry.lock
+
+# Generated articles
+generated_*.json
+article_*.json
