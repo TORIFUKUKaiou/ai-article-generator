@@ -13,6 +13,9 @@ from dotenv import load_dotenv
 # 環境変数を読み込み
 load_dotenv()
 
+# Qiitaのタイトル上限文字数
+QIITA_TITLE_MAX_LENGTH = 50
+
 @dataclass
 class ArticleData:
     """記事データの構造"""
@@ -245,8 +248,8 @@ class ArticleGenerator:
         if not title:
             title = f"{topic}について"
 
-        # Qiitaのタイトル上限に合わせて50文字に切り詰め
-        title = title[:50]
+        # Qiitaのタイトル上限に合わせて切り詰め
+        title = title[:QIITA_TITLE_MAX_LENGTH]
         
         # タグが抽出できない場合はデフォルトタグを設定
         if not tags:
